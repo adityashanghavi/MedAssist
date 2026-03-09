@@ -113,7 +113,7 @@ function DocumentBadge({ fileName, onRemove }) {
 export default function MedicalChatbot() {
   const [messages, setMessages] = useState([{
     role: "assistant",
-    content: "Hello! I'm MedAssist, your medical information companion. I can help answer general health questions, explain medical terms, or discuss symptoms and conditions.\n\nYou can also upload a PDF or TXT file and ask questions about it.\n\nHow can I help you today? Remember, for emergencies always call 911."
+    content: "Hello! I'm MedAssist, your medical information companion created by Aditya Shanghavi. I can help answer general health questions, explain medical terms, or discuss symptoms and conditions.\n\nYou can also upload a PDF or TXT file and ask questions about it.\n\nHow can I help you today? Remember, for emergencies always call 911."
   }]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
