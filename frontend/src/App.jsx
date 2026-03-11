@@ -131,7 +131,7 @@ export default function MedicalChatbot() {
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    e.target.value = ""; // reset so same file can be re-uploaded
+    e.target.value = "";
 
     const isTxt = file.name.toLowerCase().endsWith(".txt");
     const isPdf = file.name.toLowerCase().endsWith(".pdf");
@@ -146,7 +146,6 @@ export default function MedicalChatbot() {
 
     try {
       if (isTxt) {
-        // Read TXT directly in the browser
         const text = await file.text();
         setDocumentText(text);
         setDocumentName(file.name);
@@ -155,7 +154,6 @@ export default function MedicalChatbot() {
           content: `📄 I've loaded "${file.name}". Ask me anything about it!`
         }]);
       } else {
-        // Send PDF to backend for parsing
         const formData = new FormData();
         formData.append("file", file);
         const res = await fetch(`${API_URL}/upload`, {
@@ -343,7 +341,6 @@ export default function MedicalChatbot() {
           padding: "12px 16px 16px", borderTop: "1px solid rgba(0,184,169,.12)",
           display: "flex", gap: "8px", alignItems: "flex-end"
         }}>
-          {/* Upload button */}
           <input
             ref={fileInputRef}
             type="file"
@@ -395,19 +392,20 @@ export default function MedicalChatbot() {
             <SendIcon />
           </button>
         </div>
-      </div>
 
-      <div style={{
-        textAlign: "center",
-        padding: "10px",
-        fontSize: "11px",
-        color: "#8fa6b2",
-        fontFamily: "sans-serif",
-        borderTop: "1px solid rgba(0,184,169,.08)"
-      }}>
-        © 2026 Aditya Shanghavi. All Rights Reserved.
-      </div>
+        {/* Copyright */}
+        <div style={{
+          textAlign: "center",
+          padding: "8px",
+          fontSize: "11px",
+          color: "#8fa6b2",
+          fontFamily: "sans-serif",
+          borderTop: "1px solid rgba(0,184,169,.08)"
+        }}>
+          © 2026 Aditya Shanghavi. All Rights Reserved.
+        </div>
 
+      </div>
     </div>
   );
 }
