@@ -396,6 +396,18 @@ export default function MedicalChatbot() {
           </button>
         </div>
       </div>
+
+      <div style={{
+        textAlign: "center",
+        padding: "10px",
+        fontSize: "11px",
+        color: "#8fa6b2",
+        fontFamily: "sans-serif",
+        borderTop: "1px solid rgba(0,184,169,.08)"
+      }}>
+        © 2026 Aditya Shanghavi. All Rights Reserved.
+      </div>
+
     </div>
   );
 }
