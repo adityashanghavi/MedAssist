@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+anthropic
+python-dotenv
+pydantic
+pdfplumber
+python-multipart
+chromadb
+fastembed
+requests
