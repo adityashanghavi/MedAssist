@@ -6,5 +6,4 @@ pydantic
 pdfplumber
 python-multipart
 chromadb
-fastembed
 requests

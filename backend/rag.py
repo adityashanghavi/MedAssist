@@ -1,22 +1,16 @@
 """
 rag.py — Retrieval-Augmented Generation module for MedAssist
 
-On server startup this module:
-1. Fetches ~200 abstracts from PubMed across 8 medical topics
-2. Embeds them using fastembed (lightweight, no PyTorch required)
-3. Stores them in an in-memory ChromaDB vector database
-
-On each chat query:
-4. Embeds the user's question
-5. Retrieves the top 5 most relevant abstracts
-6. Returns them as context to inject into Claude's system prompt
+Uses ChromaDB's built-in ONNX embedding function (no extra libraries needed).
+ChromaDB already includes onnxruntime as a dependency, so this works
+on Render's free tier without PyTorch or Rust compilation.
 """
 
 import requests
 import time
 import chromadb
 from chromadb.config import Settings
-from fastembed import TextEmbedding
+from chromadb.utils.embedding_functions import ONNXMiniLM_L6_V2
 import logging
 import xml.etree.ElementTree as ET
 
@@ -37,9 +31,9 @@ ABSTRACTS_PER_TOPIC = 25
 TOP_K_RESULTS = 5
 PUBMED_BASE = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
 
-_model = None
 _collection = None
 _is_ready = False
+_embed_fn = None
 
 
 def _search_pubmed_ids(query: str, max_results: int) -> list:
@@ -97,15 +91,16 @@ def _parse_xml_abstracts(xml_text: str) -> list:
 
 
 def build_index():
-    global _model, _collection, _is_ready
+    global _collection, _is_ready, _embed_fn
 
-    logger.info("RAG: Loading embedding model (BAAI/bge-small-en-v1.5 via fastembed)...")
-    _model = TextEmbedding(model_name="BAAI/bge-small-en-v1.5")
+    logger.info("RAG: Initialising embedding function (ChromaDB built-in ONNX)...")
+    _embed_fn = ONNXMiniLM_L6_V2()
 
     logger.info("RAG: Initialising ChromaDB...")
     client = chromadb.Client(Settings(anonymized_telemetry=False))
     _collection = client.create_collection(
         name="medical_literature",
+        embedding_function=_embed_fn,
         metadata={"hnsw:space": "cosine"},
     )
 
@@ -136,15 +131,11 @@ def build_index():
             d_ids.append(uid)
             d_meta.append(meta)
 
-    logger.info(f"RAG: Embedding {len(d_docs)} abstracts...")
-    embeddings = list(_model.embed(d_docs))
-
-    logger.info("RAG: Storing in ChromaDB...")
-    batch = 100
+    logger.info(f"RAG: Embedding and storing {len(d_docs)} abstracts...")
+    batch = 50
     for i in range(0, len(d_docs), batch):
         _collection.add(
             documents=d_docs[i:i+batch],
-            embeddings=[e.tolist() for e in embeddings[i:i+batch]],
             ids=d_ids[i:i+batch],
             metadatas=d_meta[i:i+batch],
         )
@@ -154,12 +145,11 @@ def build_index():
 
 
 def retrieve(query: str) -> str:
-    if not _is_ready or _collection is None or _model is None:
+    if not _is_ready or _collection is None:
         return ""
     try:
-        query_embedding = list(_model.embed([query]))[0].tolist()
         results = _collection.query(
-            query_embeddings=[query_embedding],
+            query_texts=[query],
             n_results=TOP_K_RESULTS,
             include=["documents", "metadatas"],
         )
