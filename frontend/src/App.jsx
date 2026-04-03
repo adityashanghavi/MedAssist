@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
-const API_URL = "https://medassist-backend-n0e0.onrender.com";
+const API_URL = "https://medassist-production-aa9a.up.railway.app";
 
 const suggestedQuestions = [
   "What are common symptoms of Type 2 diabetes?",
