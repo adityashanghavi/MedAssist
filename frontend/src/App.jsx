@@ -2,41 +2,14 @@ import { useState, useRef, useEffect } from "react";
 
 const API_URL = "https://medassist-production-aa9a.up.railway.app";
 
-const suggestedQuestions = [
-  "What are common symptoms of Type 2 diabetes?",
-  "How does high blood pressure affect the body?",
-  "What's the difference between viral and bacterial infections?",
-  "When should I see a doctor for chest pain?",
-];
-
-const PulseIcon = () => (
-  <div style={{
-    width: "44px", height: "44px", borderRadius: "12px",
-    background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)",
-    display: "flex", alignItems: "center", justifyContent: "center",
-    border: "1px solid rgba(255,255,255,0.25)",
-    fontFamily: "Georgia, serif", fontWeight: "bold",
-    fontSize: "16px", color: "white", letterSpacing: "1px",
-  }}>AS</div>
-);
-
-const SendIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-    <line x1="22" y1="2" x2="11" y2="13" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-    <polygon points="22 2 15 22 11 13 2 9 22 2" stroke="currentColor" strokeWidth="2" fill="currentColor" strokeLinejoin="round"/>
-  </svg>
-);
-
-const UploadIcon = () => (
-  <span style={{ fontSize: "22px", lineHeight: 1, fontWeight: "300" }}>+</span>
-);
+const WELCOME_MESSAGE = "Hello! I'm MedAssist, your medical information companion created by Aditya Shanghavi. I can help answer general health questions, explain medical terms, or discuss symptoms and conditions.\n\nYou can also upload a PDF or TXT file and ask questions about it.\n\nHow can I help you today? Remember, for emergencies always call 911.";
 
 function TypingDots() {
   return (
     <div style={{ display: "flex", gap: "5px", alignItems: "center", padding: "4px 0" }}>
       {[0, 1, 2].map(i => (
         <div key={i} style={{
-          width: "7px", height: "7px", borderRadius: "50%", background: "#00b8a9",
+          width: "7px", height: "7px", borderRadius: "50%", background: "#0077b6",
           animation: "bounce 1.2s infinite", animationDelay: `${i * 0.2}s`
         }} />
       ))}
@@ -46,39 +19,35 @@ function TypingDots() {
 
 function Message({ msg }) {
   const isUser = msg.role === "user";
+  if (isUser) {
+    return (
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "20px", animation: "fadeSlideIn 0.25s ease forwards" }}>
+        <div className="user-bubble" style={{
+          background: "#e8f4fb", color: "#1a2332",
+          borderRadius: "18px 18px 4px 18px",
+          padding: "12px 16px", fontSize: "15px", lineHeight: "1.65",
+          whiteSpace: "pre-wrap", wordBreak: "break-word",
+          boxShadow: "0 1px 4px rgba(0,0,0,0.06)"
+        }}>
+          {msg.content}
+        </div>
+      </div>
+    );
+  }
   return (
-    <div style={{
-      display: "flex", justifyContent: isUser ? "flex-end" : "flex-start",
-      marginBottom: "16px", animation: "fadeSlideIn 0.3s ease forwards",
-      gap: "10px", alignItems: "flex-end"
-    }}>
-      {!isUser && (
-        <div style={{
-          width: "34px", height: "34px", borderRadius: "50%",
-          background: "linear-gradient(135deg, #00b8a9, #0077b6)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          flexShrink: 0, fontSize: "15px"
-        }}>🩺</div>
-      )}
+    <div style={{ display: "flex", gap: "12px", marginBottom: "24px", animation: "fadeSlideIn 0.25s ease forwards", alignItems: "flex-start" }}>
       <div style={{
-        maxWidth: "72%",
-        background: isUser ? "linear-gradient(135deg, #0077b6, #00b8a9)" : "white",
-        color: isUser ? "white" : "#1a2332",
-        borderRadius: isUser ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
-        padding: "12px 16px", fontSize: "14px", lineHeight: "1.65",
-        boxShadow: isUser ? "0 4px 16px rgba(0,119,182,0.3)" : "0 2px 12px rgba(0,0,0,0.08)",
-        whiteSpace: "pre-wrap", wordBreak: "break-word",
-        border: isUser ? "none" : "1px solid rgba(0,184,169,0.12)"
+        width: "32px", height: "32px", borderRadius: "50%", flexShrink: 0,
+        background: "linear-gradient(135deg, #0077b6, #00b8a9)",
+        display: "flex", alignItems: "center", justifyContent: "center", fontSize: "15px",
+        marginTop: "2px"
+      }}>🩺</div>
+      <div style={{
+        flex: 1, fontSize: "15px", lineHeight: "1.75", color: "#1a2332",
+        whiteSpace: "pre-wrap", wordBreak: "break-word", paddingTop: "4px"
       }}>
         {msg.content}
       </div>
-      {isUser && (
-        <div style={{
-          width: "34px", height: "34px", borderRadius: "50%", background: "#e8f4f8",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          flexShrink: 0, fontSize: "15px"
-        }}>👤</div>
-      )}
     </div>
   );
 }
@@ -86,35 +55,27 @@ function Message({ msg }) {
 function DocumentBadge({ fileName, onRemove }) {
   return (
     <div style={{
-      display: "flex", alignItems: "center", gap: "8px",
-      background: "rgba(0,184,169,0.08)", border: "1px solid rgba(0,184,169,0.3)",
-      borderRadius: "10px", padding: "8px 12px", margin: "0 16px 10px",
+      display: "inline-flex", alignItems: "center", gap: "7px",
+      background: "rgba(0,119,182,0.08)", border: "1px solid rgba(0,119,182,0.2)",
+      borderRadius: "8px", padding: "5px 10px", marginBottom: "8px",
       fontFamily: "sans-serif"
     }}>
-      <span style={{ fontSize: "16px" }}>📄</span>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: "12px", fontWeight: "bold", color: "#0077b6",
-          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-          {fileName}
-        </div>
-        <div style={{ fontSize: "11px", color: "#5a8fa3" }}>
-          Loaded — ask any questions about this document
-        </div>
-      </div>
+      <span style={{ fontSize: "13px" }}>📄</span>
+      <span style={{ fontSize: "12px", color: "#0077b6", fontWeight: "600",
+        maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        {fileName}
+      </span>
       <button onClick={onRemove} style={{
         background: "none", border: "none", cursor: "pointer",
-        color: "#888", fontSize: "16px", padding: "0 2px",
-        lineHeight: 1, flexShrink: 0
-      }} title="Remove document">✕</button>
+        color: "#999", fontSize: "16px", padding: "2px 4px", lineHeight: 1,
+        minWidth: "28px", minHeight: "28px"
+      }}>✕</button>
     </div>
   );
 }
 
 export default function MedicalChatbot() {
-  const [messages, setMessages] = useState([{
-    role: "assistant",
-    content: "Hello! I'm MedAssist, your medical information companion created by Aditya Shanghavi. I can help answer general health questions, explain medical terms, or discuss symptoms and conditions.\n\nYou can also upload a PDF or TXT file and ask questions about it.\n\nHow can I help you today? Remember, for emergencies always call 911."
-  }]);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -123,6 +84,9 @@ export default function MedicalChatbot() {
   const [uploading, setUploading] = useState(false);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
+  const textareaRef = useRef(null);
+
+  const hasMessages = messages.length > 0;
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -156,10 +120,7 @@ export default function MedicalChatbot() {
       } else {
         const formData = new FormData();
         formData.append("file", file);
-        const res = await fetch(`${API_URL}/upload`, {
-          method: "POST",
-          body: formData
-        });
+        const res = await fetch(`${API_URL}/upload`, { method: "POST", body: formData });
         if (!res.ok) {
           const err = await res.json();
           throw new Error(err.detail || "Failed to parse PDF");
@@ -193,6 +154,7 @@ export default function MedicalChatbot() {
     if (!userText || loading) return;
     setInput("");
     setError(null);
+    if (textareaRef.current) { textareaRef.current.style.height = "auto"; }
 
     const newMessages = [...messages, { role: "user", content: userText }];
     setMessages(newMessages);
@@ -202,17 +164,12 @@ export default function MedicalChatbot() {
       const res = await fetch(`${API_URL}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: newMessages,
-          document_text: documentText || null
-        })
+        body: JSON.stringify({ messages: newMessages, document_text: documentText || null })
       });
-
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.detail || "Server error");
       }
-
       const data = await res.json();
       setMessages(prev => [...prev, { role: "assistant", content: data.reply }]);
     } catch (err) {
@@ -225,186 +182,180 @@ export default function MedicalChatbot() {
 
   return (
     <div style={{
-      minHeight: "100vh", width: "100%",
-      background: "linear-gradient(160deg, #e8f6f8 0%, #f0f9ff 50%, #e8f4f0 100%)",
-      display: "flex", alignItems: "center", justifyContent: "center",
-      padding: "20px", fontFamily: "'Georgia', serif"
+      height: "100dvh", width: "100vw", display: "flex", flexDirection: "column",
+      background: "#f8f8f8", fontFamily: "'Georgia', serif", overflow: "hidden"
     }}>
       <style>{`
-        body, #root { margin: 0; padding: 0; width: 100%; min-height: 100vh; }
+        html, body, #root { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
+        * { box-sizing: border-box; }
         @keyframes bounce { 0%,60%,100%{transform:translateY(0);opacity:.4} 30%{transform:translateY(-6px);opacity:1} }
-        @keyframes fadeSlideIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
-        textarea:focus{outline:none}
-        ::-webkit-scrollbar{width:5px}
-        ::-webkit-scrollbar-thumb{background:rgba(0,184,169,.3);border-radius:10px}
-        .suggest:hover{background:rgba(0,184,169,.12)!important;border-color:#00b8a9!important}
-        .send:hover:not(:disabled){background:#0077b6!important;transform:scale(1.05)}
-        .send:disabled{opacity:.5;cursor:not-allowed}
-        .upload-btn:hover{background:rgba(0,184,169,0.15)!important;}
+        @keyframes fadeSlideIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+        textarea { outline: none; -webkit-appearance: none; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }
+
+        .user-bubble { max-width: 70%; }
+        .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .send-btn:not(:disabled):active { transform: scale(0.95); }
+        .upload-btn:active { opacity: 0.7; }
+
+        @media (hover: hover) {
+          .send-btn:not(:disabled):hover { background: #005f8f !important; }
+          .upload-btn:hover { background: rgba(0,0,0,0.06) !important; }
+        }
+
+        @media (max-width: 480px) {
+          .user-bubble { max-width: 85%; }
+        }
       `}</style>
 
+      {/* Header */}
       <div style={{
-        width: "100%", maxWidth: "700px",
-        background: "rgba(255,255,255,0.85)", backdropFilter: "blur(20px)",
-        borderRadius: "24px",
-        boxShadow: "0 24px 80px rgba(0,119,182,.12),0 4px 20px rgba(0,0,0,.06)",
-        display: "flex", flexDirection: "column",
-        height: "min(88vh, 780px)", overflow: "hidden",
-        border: "1px solid rgba(0,184,169,.15)"
+        flexShrink: 0, height: "56px", display: "flex", alignItems: "center",
+        justifyContent: "center", gap: "10px",
+        background: "linear-gradient(135deg, #023e8a 0%, #0077b6 55%, #00b8a9 100%)",
+        boxShadow: "0 2px 12px rgba(2,62,138,0.2)"
       }}>
-        {/* Header */}
-        <div style={{
-          background: "linear-gradient(135deg,#023e8a 0%,#0077b6 50%,#00b8a9 100%)",
-          padding: "20px 24px", display: "flex", alignItems: "center", gap: "14px"
-        }}>
+        <span style={{ fontSize: "22px" }}>🩺</span>
+        <span style={{ fontWeight: "bold", fontSize: "17px", color: "white", letterSpacing: "0.2px" }}>MedAssist</span>
+        <div style={{ display: "flex", alignItems: "center", gap: "5px", fontFamily: "sans-serif" }}>
+          <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#4ade80", display: "inline-block", flexShrink: 0 }} />
+          <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.8)" }}>Always Online</span>
+        </div>
+      </div>
+
+      {/* Main content */}
+      <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}>
+        {!hasMessages ? (
+          /* Welcome state */
           <div style={{
-            width: "48px", height: "48px", borderRadius: "14px",
-            background: "rgba(255,255,255,.15)", backdropFilter: "blur(8px)",
-            display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px"
-          }}>🩺</div>
-          <div style={{ flex: 1 }}>
-            <div style={{ color: "white", fontWeight: "bold", fontSize: "20px" }}>MedAssist</div>
-            <div style={{ color: "rgba(255,255,255,.75)", fontSize: "12px", display: "flex", alignItems: "center", gap: "6px", marginTop: "2px", fontFamily: "sans-serif" }}>
-              <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#4ade80", display: "inline-block", animation: "pulse 2s infinite" }} />
-              Medical Information Assistant · Always Online
-            </div>
-          </div>
-          <PulseIcon />
-        </div>
-
-        {/* Messages */}
-        <div style={{ flex: 1, overflowY: "auto", padding: "20px 16px 8px" }}>
-          {messages.map((msg, i) => <Message key={i} msg={msg} />)}
-          {loading && (
-            <div style={{ display: "flex", alignItems: "flex-end", gap: "10px", marginBottom: "16px" }}>
-              <div style={{
-                width: "34px", height: "34px", borderRadius: "50%",
-                background: "linear-gradient(135deg,#00b8a9,#0077b6)",
-                display: "flex", alignItems: "center", justifyContent: "center", fontSize: "15px"
-              }}>🩺</div>
-              <div style={{
-                background: "white", borderRadius: "18px 18px 18px 4px",
-                padding: "12px 16px", boxShadow: "0 2px 12px rgba(0,0,0,.08)",
-                border: "1px solid rgba(0,184,169,.12)"
-              }}>
-                <TypingDots />
-              </div>
-            </div>
-          )}
-          {error && (
-            <div style={{
-              background: "#fff0f0", border: "1px solid #ffb3b3", borderRadius: "10px",
-              padding: "10px 14px", fontSize: "13px", color: "#c0392b",
-              marginBottom: "12px", fontFamily: "sans-serif"
+            flex: 1, display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center",
+            padding: "32px 24px 24px", textAlign: "center"
+          }}>
+            <div style={{ fontSize: "clamp(32px, 6vw, 48px)", marginBottom: "16px" }}>🩺</div>
+            <h1 style={{
+              fontSize: "clamp(20px, 4vw, 30px)", fontWeight: "bold", color: "#1a2332",
+              margin: "0 0 16px", letterSpacing: "-0.3px", lineHeight: "1.3"
             }}>
-              ⚠️ Error: {error}
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Suggested questions */}
-        {messages.length <= 1 && (
-          <div style={{ padding: "0 16px 12px" }}>
-            <div style={{ fontSize: "11px", color: "#8fa6b2", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.8px", fontFamily: "sans-serif" }}>
-              Common Questions
-            </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-              {suggestedQuestions.map((q, i) => (
-                <button key={i} className="suggest" onClick={() => sendMessage(q)} style={{
-                  background: "rgba(0,184,169,.06)", border: "1px solid rgba(0,184,169,.25)",
-                  borderRadius: "20px", padding: "6px 12px", fontSize: "12px", color: "#0077b6",
-                  cursor: "pointer", transition: "all .2s", fontFamily: "sans-serif"
-                }}>{q}</button>
-              ))}
-            </div>
+              How can I help you today?
+            </h1>
+            <p style={{
+              fontSize: "clamp(13px, 2vw, 15px)", color: "#555", lineHeight: "1.8",
+              maxWidth: "480px", margin: 0, fontFamily: "sans-serif"
+            }}>
+              {WELCOME_MESSAGE}
+            </p>
+          </div>
+        ) : (
+          /* Chat messages */
+          <div style={{
+            maxWidth: "720px", width: "100%", margin: "0 auto",
+            padding: "clamp(16px, 3vw, 32px) clamp(14px, 3vw, 24px) 16px"
+          }}>
+            {messages.map((msg, i) => <Message key={i} msg={msg} />)}
+            {loading && (
+              <div style={{ display: "flex", gap: "12px", marginBottom: "24px", alignItems: "flex-start" }}>
+                <div style={{
+                  width: "32px", height: "32px", borderRadius: "50%", flexShrink: 0,
+                  background: "linear-gradient(135deg, #0077b6, #00b8a9)",
+                  display: "flex", alignItems: "center", justifyContent: "center", fontSize: "15px"
+                }}>🩺</div>
+                <div style={{ paddingTop: "8px" }}><TypingDots /></div>
+              </div>
+            )}
+            {error && (
+              <div style={{
+                background: "#fff0f0", border: "1px solid #ffb3b3", borderRadius: "10px",
+                padding: "10px 14px", fontSize: "13px", color: "#c0392b",
+                marginBottom: "14px", fontFamily: "sans-serif"
+              }}>
+                ⚠️ Error: {error}
+              </div>
+            )}
+            <div ref={messagesEndRef} />
           </div>
         )}
+      </div>
 
-        {/* Document badge */}
-        {documentName && <DocumentBadge fileName={documentName} onRemove={removeDocument} />}
+      {/* Input area */}
+      <div style={{
+        flexShrink: 0, background: "#f8f8f8",
+        padding: "clamp(8px, 2vw, 12px) clamp(12px, 3vw, 24px) clamp(12px, 3vw, 20px)"
+      }}>
+        <div style={{ maxWidth: "720px", margin: "0 auto" }}>
 
-        {/* Disclaimer */}
-        <div style={{
-          background: "rgba(255,193,7,.1)", border: "1px solid rgba(255,193,7,.3)",
-          borderRadius: "8px", padding: "10px 14px", margin: "0 16px 12px",
-          display: "flex", gap: "8px", fontSize: "12px", color: "#b8860b",
-          lineHeight: "1.5", fontFamily: "sans-serif"
-        }}>
-          <span style={{ fontSize: "14px", flexShrink: 0 }}>⚠️</span>
-          <span><strong>Medical Disclaimer:</strong> This chatbot provides general health information only and is not a substitute for professional medical advice, diagnosis, or treatment.</span>
-        </div>
+          {documentName && <DocumentBadge fileName={documentName} onRemove={removeDocument} />}
 
-        {/* Input row */}
-        <div style={{
-          padding: "12px 16px 16px", borderTop: "1px solid rgba(0,184,169,.12)",
-          display: "flex", gap: "8px", alignItems: "flex-end"
-        }}>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".pdf,.txt"
-            onChange={handleFileUpload}
-            style={{ display: "none" }}
-          />
-          <button
-            className="upload-btn"
-            onClick={() => fileInputRef.current.click()}
-            disabled={uploading}
-            title="Upload PDF or TXT file"
-            style={{
-              width: "44px", height: "44px", borderRadius: "13px",
-              background: documentName ? "rgba(0,184,169,0.15)" : "rgba(0,119,182,0.08)",
-              border: `1.5px solid ${documentName ? "#00b8a9" : "rgba(0,119,182,0.25)"}`,
-              cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-              color: documentName ? "#00b8a9" : "#0077b6", flexShrink: 0, transition: "all .2s"
+          {/* Input card */}
+          <div style={{
+            background: "white", borderRadius: "16px",
+            boxShadow: "0 2px 16px rgba(0,0,0,0.1), 0 1px 4px rgba(0,0,0,0.06)",
+            border: "1px solid rgba(0,0,0,0.08)"
+          }}>
+            <textarea
+              ref={textareaRef}
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+              placeholder={documentName ? `Ask about ${documentName}…` : "Ask a medical question…"}
+              rows={1}
+              style={{
+                display: "block", width: "100%", resize: "none", border: "none",
+                padding: "16px 16px 8px", fontSize: "15px", color: "#1a2332",
+                background: "transparent", lineHeight: "1.55",
+                fontFamily: "Georgia, serif", maxHeight: "120px",
+                borderRadius: "16px 16px 0 0"
+              }}
+              onInput={e => { e.target.style.height = "auto"; e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px"; }}
+            />
+            <div style={{
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              padding: "6px 10px 10px"
             }}>
-            {uploading ? "⏳" : <UploadIcon />}
-          </button>
+              <input ref={fileInputRef} type="file" accept=".pdf,.txt" onChange={handleFileUpload} style={{ display: "none" }} />
+              <button
+                className="upload-btn"
+                onClick={() => fileInputRef.current.click()}
+                disabled={uploading}
+                title="Upload PDF or TXT"
+                style={{
+                  width: "44px", height: "44px", borderRadius: "10px",
+                  background: "transparent",
+                  border: `1.5px solid ${documentName ? "rgba(0,119,182,0.5)" : "rgba(0,0,0,0.12)"}`,
+                  cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                  color: documentName ? "#0077b6" : "#555", fontSize: "22px",
+                  transition: "opacity .15s", fontWeight: "300", flexShrink: 0
+                }}>
+                {uploading ? "⏳" : "+"}
+              </button>
+              <button
+                className="send-btn"
+                onClick={() => sendMessage()}
+                disabled={!input.trim() || loading}
+                style={{
+                  width: "44px", height: "44px", borderRadius: "10px",
+                  background: "#0077b6", border: "none",
+                  cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                  color: "white", transition: "background .15s, transform .1s",
+                  boxShadow: "0 2px 8px rgba(0,119,182,0.35)", flexShrink: 0,
+                  fontSize: "20px"
+                }}>
+                ↑
+              </button>
+            </div>
+          </div>
 
-          <textarea
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
-            placeholder={documentName ? `Ask about ${documentName}…` : "Ask a medical question… (Shift+Enter for new line)"}
-            rows={1}
-            style={{
-              flex: 1, resize: "none",
-              border: "1.5px solid rgba(0,184,169,.3)", borderRadius: "14px",
-              padding: "11px 14px", fontSize: "14px", color: "#1a2332",
-              background: "rgba(248,252,255,.9)", lineHeight: "1.5",
-              fontFamily: "Georgia, serif", maxHeight: "120px",
-              transition: "border-color .2s", boxSizing: "border-box"
-            }}
-            onFocus={e => e.target.style.borderColor = "#00b8a9"}
-            onBlur={e => e.target.style.borderColor = "rgba(0,184,169,.3)"}
-            onInput={e => { e.target.style.height = "auto"; e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px"; }}
-          />
-          <button className="send" onClick={() => sendMessage()} disabled={!input.trim() || loading}
-            style={{
-              width: "44px", height: "44px", borderRadius: "13px",
-              background: "linear-gradient(135deg,#0077b6,#00b8a9)", border: "none",
-              cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-              color: "white", flexShrink: 0, transition: "all .2s",
-              boxShadow: "0 4px 14px rgba(0,119,182,.35)"
-            }}>
-            <SendIcon />
-          </button>
+          {/* Disclaimer */}
+          <div style={{
+            marginTop: "8px", textAlign: "center",
+            fontSize: "clamp(10px, 1.5vw, 11.5px)", color: "#aaa",
+            fontFamily: "sans-serif", lineHeight: "1.5"
+          }}>
+            ⚠️ <strong style={{ color: "#999" }}>Medical Disclaimer:</strong> For information only. Please consult your doctor for treatment plans.
+          </div>
         </div>
-
-        {/* Copyright */}
-        <div style={{
-          textAlign: "center",
-          padding: "8px",
-          fontSize: "11px",
-          color: "#8fa6b2",
-          fontFamily: "sans-serif",
-          borderTop: "1px solid rgba(0,184,169,.08)"
-        }}>
-          © 2026 Aditya Shanghavi. All Rights Reserved.
-        </div>
-
       </div>
     </div>
   );
