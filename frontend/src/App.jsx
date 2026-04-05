@@ -226,7 +226,7 @@ export default function MedicalChatbot() {
   return (
     <div style={{
       height: "100vh", width: "100vw", display: "flex", flexDirection: "column",
-      background: "#f0f7fa", fontFamily: "'Georgia', serif", overflow: "hidden"
+      background: "#ffffff", fontFamily: "'Georgia', serif", overflow: "hidden"
     }}>
       <style>{`
         html, body, #root { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
@@ -268,7 +268,7 @@ export default function MedicalChatbot() {
       </div>
 
       {/* Messages area */}
-      <div style={{ flex: 1, overflowY: "auto", background: "#f0f7fa" }}>
+      <div style={{ flex: 1, overflowY: "auto", background: "#ffffff" }}>
         <div style={{ maxWidth: "900px", margin: "0 auto", padding: "28px 32px 12px" }}>
           {messages.map((msg, i) => <Message key={i} msg={msg} />)}
           {loading && (
