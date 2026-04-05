@@ -123,20 +123,22 @@ def root():
 def debug_tesseract():
     import shutil
     import subprocess
-    import glob
-    which_result = shutil.which("tesseract")
-    glob_result = glob.glob("/nix/**/*tesseract*", recursive=True)
+    result = {}
+    result["which"] = shutil.which("tesseract")
     try:
-        find_result = subprocess.run(["find", "/", "-name", "tesseract", "-type", "f"], 
-                                     capture_output=True, text=True, timeout=10)
-        find_output = find_result.stdout
+        find = subprocess.run(
+            ["find", "/", "-name", "tesseract", "-type", "f"],
+            capture_output=True, text=True, timeout=15
+        )
+        result["find"] = find.stdout.strip().split("\n")
     except Exception as e:
-        find_output = str(e)
-    return {
-        "which": which_result,
-        "glob_nix": glob_result[:10],
-        "find": find_output
-    }
+        result["find_error"] = str(e)
+    try:
+        env = subprocess.run(["env"], capture_output=True, text=True)
+        result["path"] = [l for l in env.stdout.split("\n") if "PATH" in l]
+    except Exception as e:
+        result["env_error"] = str(e)
+    return result
 
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
