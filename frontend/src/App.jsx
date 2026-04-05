@@ -11,12 +11,12 @@ const suggestedQuestions = [
 
 const PulseIcon = () => (
   <div style={{
-    width: "44px", height: "44px", borderRadius: "12px",
+    width: "38px", height: "38px", borderRadius: "10px",
     background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)",
     display: "flex", alignItems: "center", justifyContent: "center",
     border: "1px solid rgba(255,255,255,0.25)",
     fontFamily: "Georgia, serif", fontWeight: "bold",
-    fontSize: "16px", color: "white", letterSpacing: "1px",
+    fontSize: "14px", color: "white", letterSpacing: "1px",
   }}>AS</div>
 );
 
@@ -49,7 +49,7 @@ function Message({ msg }) {
   return (
     <div style={{
       display: "flex", justifyContent: isUser ? "flex-end" : "flex-start",
-      marginBottom: "16px", animation: "fadeSlideIn 0.3s ease forwards",
+      marginBottom: "18px", animation: "fadeSlideIn 0.3s ease forwards",
       gap: "10px", alignItems: "flex-end"
     }}>
       {!isUser && (
@@ -61,12 +61,12 @@ function Message({ msg }) {
         }}>🩺</div>
       )}
       <div style={{
-        maxWidth: "72%",
+        maxWidth: "65%",
         background: isUser ? "linear-gradient(135deg, #0077b6, #00b8a9)" : "white",
         color: isUser ? "white" : "#1a2332",
         borderRadius: isUser ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
-        padding: "12px 16px", fontSize: "14px", lineHeight: "1.65",
-        boxShadow: isUser ? "0 4px 16px rgba(0,119,182,0.3)" : "0 2px 12px rgba(0,0,0,0.08)",
+        padding: "13px 17px", fontSize: "14.5px", lineHeight: "1.7",
+        boxShadow: isUser ? "0 4px 16px rgba(0,119,182,0.25)" : "0 2px 12px rgba(0,0,0,0.07)",
         whiteSpace: "pre-wrap", wordBreak: "break-word",
         border: isUser ? "none" : "1px solid rgba(0,184,169,0.12)"
       }}>
@@ -88,7 +88,7 @@ function DocumentBadge({ fileName, onRemove }) {
     <div style={{
       display: "flex", alignItems: "center", gap: "8px",
       background: "rgba(0,184,169,0.08)", border: "1px solid rgba(0,184,169,0.3)",
-      borderRadius: "10px", padding: "8px 12px", margin: "0 16px 10px",
+      borderRadius: "10px", padding: "8px 12px", marginBottom: "10px",
       fontFamily: "sans-serif"
     }}>
       <span style={{ fontSize: "16px" }}>📄</span>
@@ -225,67 +225,62 @@ export default function MedicalChatbot() {
 
   return (
     <div style={{
-      minHeight: "100vh", width: "100%",
-      background: "linear-gradient(160deg, #e8f6f8 0%, #f0f9ff 50%, #e8f4f0 100%)",
-      display: "flex", alignItems: "center", justifyContent: "center",
-      padding: "20px", fontFamily: "'Georgia', serif"
+      height: "100vh", width: "100vw", display: "flex", flexDirection: "column",
+      background: "#f0f7fa", fontFamily: "'Georgia', serif", overflow: "hidden"
     }}>
       <style>{`
-        body, #root { margin: 0; padding: 0; width: 100%; min-height: 100vh; }
+        html, body, #root { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
         @keyframes bounce { 0%,60%,100%{transform:translateY(0);opacity:.4} 30%{transform:translateY(-6px);opacity:1} }
-        @keyframes fadeSlideIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
+        @keyframes fadeSlideIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
         textarea:focus{outline:none}
-        ::-webkit-scrollbar{width:5px}
-        ::-webkit-scrollbar-thumb{background:rgba(0,184,169,.3);border-radius:10px}
-        .suggest:hover{background:rgba(0,184,169,.12)!important;border-color:#00b8a9!important}
-        .send:hover:not(:disabled){background:#0077b6!important;transform:scale(1.05)}
-        .send:disabled{opacity:.5;cursor:not-allowed}
+        ::-webkit-scrollbar{width:6px}
+        ::-webkit-scrollbar-track{background:transparent}
+        ::-webkit-scrollbar-thumb{background:rgba(0,184,169,.25);border-radius:10px}
+        ::-webkit-scrollbar-thumb:hover{background:rgba(0,184,169,.45)}
+        .suggest:hover{background:rgba(0,184,169,.12)!important;border-color:#00b8a9!important;color:#005f8f!important}
+        .send:hover:not(:disabled){filter:brightness(1.1);transform:scale(1.05)}
+        .send:disabled{opacity:.45;cursor:not-allowed}
         .upload-btn:hover{background:rgba(0,184,169,0.15)!important;}
       `}</style>
 
+      {/* Header */}
       <div style={{
-        width: "100%", maxWidth: "700px",
-        background: "rgba(255,255,255,0.85)", backdropFilter: "blur(20px)",
-        borderRadius: "24px",
-        boxShadow: "0 24px 80px rgba(0,119,182,.12),0 4px 20px rgba(0,0,0,.06)",
-        display: "flex", flexDirection: "column",
-        height: "min(88vh, 780px)", overflow: "hidden",
-        border: "1px solid rgba(0,184,169,.15)"
+        background: "linear-gradient(135deg, #023e8a 0%, #0077b6 55%, #00b8a9 100%)",
+        padding: "0 32px", height: "64px", flexShrink: 0,
+        display: "flex", alignItems: "center", gap: "14px",
+        boxShadow: "0 2px 16px rgba(2,62,138,0.18)"
       }}>
-        {/* Header */}
         <div style={{
-          background: "linear-gradient(135deg,#023e8a 0%,#0077b6 50%,#00b8a9 100%)",
-          padding: "20px 24px", display: "flex", alignItems: "center", gap: "14px"
-        }}>
-          <div style={{
-            width: "48px", height: "48px", borderRadius: "14px",
-            background: "rgba(255,255,255,.15)", backdropFilter: "blur(8px)",
-            display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px"
-          }}>🩺</div>
-          <div style={{ flex: 1 }}>
-            <div style={{ color: "white", fontWeight: "bold", fontSize: "20px" }}>MedAssist</div>
-            <div style={{ color: "rgba(255,255,255,.75)", fontSize: "12px", display: "flex", alignItems: "center", gap: "6px", marginTop: "2px", fontFamily: "sans-serif" }}>
-              <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#4ade80", display: "inline-block", animation: "pulse 2s infinite" }} />
-              Medical Information Assistant · Always Online
-            </div>
+          width: "40px", height: "40px", borderRadius: "12px",
+          background: "rgba(255,255,255,.15)", backdropFilter: "blur(8px)",
+          display: "flex", alignItems: "center", justifyContent: "center", fontSize: "22px",
+          border: "1px solid rgba(255,255,255,0.2)", flexShrink: 0
+        }}>🩺</div>
+        <div style={{ flex: 1 }}>
+          <div style={{ color: "white", fontWeight: "bold", fontSize: "18px", letterSpacing: "0.3px" }}>MedAssist</div>
+          <div style={{ color: "rgba(255,255,255,.7)", fontSize: "12px", display: "flex", alignItems: "center", gap: "6px", marginTop: "2px", fontFamily: "sans-serif" }}>
+            <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#4ade80", display: "inline-block", animation: "pulse 2s infinite", flexShrink: 0 }} />
+            Medical Information Assistant · Always Online
           </div>
-          <PulseIcon />
         </div>
+        <PulseIcon />
+      </div>
 
-        {/* Messages */}
-        <div style={{ flex: 1, overflowY: "auto", padding: "20px 16px 8px" }}>
+      {/* Messages area */}
+      <div style={{ flex: 1, overflowY: "auto", background: "#f0f7fa" }}>
+        <div style={{ maxWidth: "900px", margin: "0 auto", padding: "28px 32px 12px" }}>
           {messages.map((msg, i) => <Message key={i} msg={msg} />)}
           {loading && (
-            <div style={{ display: "flex", alignItems: "flex-end", gap: "10px", marginBottom: "16px" }}>
+            <div style={{ display: "flex", alignItems: "flex-end", gap: "10px", marginBottom: "18px" }}>
               <div style={{
                 width: "34px", height: "34px", borderRadius: "50%",
                 background: "linear-gradient(135deg,#00b8a9,#0077b6)",
-                display: "flex", alignItems: "center", justifyContent: "center", fontSize: "15px"
+                display: "flex", alignItems: "center", justifyContent: "center", fontSize: "15px", flexShrink: 0
               }}>🩺</div>
               <div style={{
                 background: "white", borderRadius: "18px 18px 18px 4px",
-                padding: "12px 16px", boxShadow: "0 2px 12px rgba(0,0,0,.08)",
+                padding: "12px 16px", boxShadow: "0 2px 12px rgba(0,0,0,.07)",
                 border: "1px solid rgba(0,184,169,.12)"
               }}>
                 <TypingDots />
@@ -296,115 +291,116 @@ export default function MedicalChatbot() {
             <div style={{
               background: "#fff0f0", border: "1px solid #ffb3b3", borderRadius: "10px",
               padding: "10px 14px", fontSize: "13px", color: "#c0392b",
-              marginBottom: "12px", fontFamily: "sans-serif"
+              marginBottom: "14px", fontFamily: "sans-serif"
             }}>
               ⚠️ Error: {error}
             </div>
           )}
           <div ref={messagesEndRef} />
         </div>
+      </div>
 
-        {/* Suggested questions */}
-        {messages.length <= 1 && (
-          <div style={{ padding: "0 16px 12px" }}>
-            <div style={{ fontSize: "11px", color: "#8fa6b2", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.8px", fontFamily: "sans-serif" }}>
-              Common Questions
+      {/* Bottom panel */}
+      <div style={{
+        background: "white", borderTop: "1px solid rgba(0,184,169,.15)",
+        boxShadow: "0 -4px 24px rgba(0,119,182,.06)", flexShrink: 0
+      }}>
+        <div style={{ maxWidth: "900px", margin: "0 auto", padding: "14px 32px 16px" }}>
+
+          {/* Suggested questions */}
+          {messages.length <= 1 && (
+            <div style={{ marginBottom: "12px" }}>
+              <div style={{ fontSize: "11px", color: "#8fa6b2", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.8px", fontFamily: "sans-serif" }}>
+                Common Questions
+              </div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                {suggestedQuestions.map((q, i) => (
+                  <button key={i} className="suggest" onClick={() => sendMessage(q)} style={{
+                    background: "rgba(0,184,169,.06)", border: "1px solid rgba(0,184,169,.25)",
+                    borderRadius: "20px", padding: "6px 14px", fontSize: "12.5px", color: "#0077b6",
+                    cursor: "pointer", transition: "all .2s", fontFamily: "sans-serif"
+                  }}>{q}</button>
+                ))}
+              </div>
             </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-              {suggestedQuestions.map((q, i) => (
-                <button key={i} className="suggest" onClick={() => sendMessage(q)} style={{
-                  background: "rgba(0,184,169,.06)", border: "1px solid rgba(0,184,169,.25)",
-                  borderRadius: "20px", padding: "6px 12px", fontSize: "12px", color: "#0077b6",
-                  cursor: "pointer", transition: "all .2s", fontFamily: "sans-serif"
-                }}>{q}</button>
-              ))}
-            </div>
+          )}
+
+          {/* Document badge */}
+          {documentName && <DocumentBadge fileName={documentName} onRemove={removeDocument} />}
+
+          {/* Disclaimer */}
+          <div style={{
+            background: "rgba(255,193,7,.08)", border: "1px solid rgba(255,193,7,.28)",
+            borderRadius: "8px", padding: "9px 13px", marginBottom: "12px",
+            display: "flex", gap: "8px", fontSize: "12px", color: "#9a7000",
+            lineHeight: "1.5", fontFamily: "sans-serif"
+          }}>
+            <span style={{ fontSize: "14px", flexShrink: 0 }}>⚠️</span>
+            <span><strong>Medical Disclaimer:</strong> This chatbot provides general health information only and is not a substitute for professional medical advice, diagnosis, or treatment.</span>
           </div>
-        )}
 
-        {/* Document badge */}
-        {documentName && <DocumentBadge fileName={documentName} onRemove={removeDocument} />}
+          {/* Input row */}
+          <div style={{ display: "flex", gap: "10px", alignItems: "flex-end" }}>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.txt"
+              onChange={handleFileUpload}
+              style={{ display: "none" }}
+            />
+            <button
+              className="upload-btn"
+              onClick={() => fileInputRef.current.click()}
+              disabled={uploading}
+              title="Upload PDF or TXT file"
+              style={{
+                width: "44px", height: "44px", borderRadius: "13px",
+                background: documentName ? "rgba(0,184,169,0.12)" : "rgba(0,119,182,0.07)",
+                border: `1.5px solid ${documentName ? "#00b8a9" : "rgba(0,119,182,0.22)"}`,
+                cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                color: documentName ? "#00b8a9" : "#0077b6", flexShrink: 0, transition: "all .2s"
+              }}>
+              {uploading ? "⏳" : <UploadIcon />}
+            </button>
 
-        {/* Disclaimer */}
-        <div style={{
-          background: "rgba(255,193,7,.1)", border: "1px solid rgba(255,193,7,.3)",
-          borderRadius: "8px", padding: "10px 14px", margin: "0 16px 12px",
-          display: "flex", gap: "8px", fontSize: "12px", color: "#b8860b",
-          lineHeight: "1.5", fontFamily: "sans-serif"
-        }}>
-          <span style={{ fontSize: "14px", flexShrink: 0 }}>⚠️</span>
-          <span><strong>Medical Disclaimer:</strong> This chatbot provides general health information only and is not a substitute for professional medical advice, diagnosis, or treatment.</span>
+            <textarea
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+              placeholder={documentName ? `Ask about ${documentName}…` : "Ask a medical question… (Shift+Enter for new line)"}
+              rows={1}
+              style={{
+                flex: 1, resize: "none",
+                border: "1.5px solid rgba(0,184,169,.3)", borderRadius: "14px",
+                padding: "11px 16px", fontSize: "14px", color: "#1a2332",
+                background: "#f8fcff", lineHeight: "1.5",
+                fontFamily: "Georgia, serif", maxHeight: "120px",
+                transition: "border-color .2s, box-shadow .2s", boxSizing: "border-box"
+              }}
+              onFocus={e => { e.target.style.borderColor = "#00b8a9"; e.target.style.boxShadow = "0 0 0 3px rgba(0,184,169,.1)"; }}
+              onBlur={e => { e.target.style.borderColor = "rgba(0,184,169,.3)"; e.target.style.boxShadow = "none"; }}
+              onInput={e => { e.target.style.height = "auto"; e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px"; }}
+            />
+            <button className="send" onClick={() => sendMessage()} disabled={!input.trim() || loading}
+              style={{
+                width: "44px", height: "44px", borderRadius: "13px",
+                background: "linear-gradient(135deg,#0077b6,#00b8a9)", border: "none",
+                cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                color: "white", flexShrink: 0, transition: "all .2s",
+                boxShadow: "0 4px 14px rgba(0,119,182,.3)"
+              }}>
+              <SendIcon />
+            </button>
+          </div>
+
+          {/* Copyright */}
+          <div style={{
+            textAlign: "center", paddingTop: "10px",
+            fontSize: "11px", color: "#a0b4be", fontFamily: "sans-serif"
+          }}>
+            © 2026 Aditya Shanghavi. All Rights Reserved.
+          </div>
         </div>
-
-        {/* Input row */}
-        <div style={{
-          padding: "12px 16px 16px", borderTop: "1px solid rgba(0,184,169,.12)",
-          display: "flex", gap: "8px", alignItems: "flex-end"
-        }}>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".pdf,.txt"
-            onChange={handleFileUpload}
-            style={{ display: "none" }}
-          />
-          <button
-            className="upload-btn"
-            onClick={() => fileInputRef.current.click()}
-            disabled={uploading}
-            title="Upload PDF or TXT file"
-            style={{
-              width: "44px", height: "44px", borderRadius: "13px",
-              background: documentName ? "rgba(0,184,169,0.15)" : "rgba(0,119,182,0.08)",
-              border: `1.5px solid ${documentName ? "#00b8a9" : "rgba(0,119,182,0.25)"}`,
-              cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-              color: documentName ? "#00b8a9" : "#0077b6", flexShrink: 0, transition: "all .2s"
-            }}>
-            {uploading ? "⏳" : <UploadIcon />}
-          </button>
-
-          <textarea
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
-            placeholder={documentName ? `Ask about ${documentName}…` : "Ask a medical question… (Shift+Enter for new line)"}
-            rows={1}
-            style={{
-              flex: 1, resize: "none",
-              border: "1.5px solid rgba(0,184,169,.3)", borderRadius: "14px",
-              padding: "11px 14px", fontSize: "14px", color: "#1a2332",
-              background: "rgba(248,252,255,.9)", lineHeight: "1.5",
-              fontFamily: "Georgia, serif", maxHeight: "120px",
-              transition: "border-color .2s", boxSizing: "border-box"
-            }}
-            onFocus={e => e.target.style.borderColor = "#00b8a9"}
-            onBlur={e => e.target.style.borderColor = "rgba(0,184,169,.3)"}
-            onInput={e => { e.target.style.height = "auto"; e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px"; }}
-          />
-          <button className="send" onClick={() => sendMessage()} disabled={!input.trim() || loading}
-            style={{
-              width: "44px", height: "44px", borderRadius: "13px",
-              background: "linear-gradient(135deg,#0077b6,#00b8a9)", border: "none",
-              cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-              color: "white", flexShrink: 0, transition: "all .2s",
-              boxShadow: "0 4px 14px rgba(0,119,182,.35)"
-            }}>
-            <SendIcon />
-          </button>
-        </div>
-
-        {/* Copyright */}
-        <div style={{
-          textAlign: "center",
-          padding: "8px",
-          fontSize: "11px",
-          color: "#8fa6b2",
-          fontFamily: "sans-serif",
-          borderTop: "1px solid rgba(0,184,169,.08)"
-        }}>
-          © 2026 Aditya Shanghavi. All Rights Reserved.
-        </div>
-
       </div>
     </div>
   );
