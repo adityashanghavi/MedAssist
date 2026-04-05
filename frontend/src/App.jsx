@@ -5,10 +5,7 @@ const API_URL = "https://medassist-production-aa9a.up.railway.app";
 const WELCOME_MESSAGE = "Hello! I'm MedAssist, your medical information companion created by Aditya Shanghavi. I can help answer general health questions, explain medical terms, or discuss symptoms and conditions.\n\nYou can also upload a PDF or TXT file and ask questions about it.\n\nHow can I help you today? Remember, for emergencies always call 911.";
 
 const SendIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="22" y1="2" x2="11" y2="13"/>
-    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-  </svg>
+  <span style={{ fontSize: "18px", color: "white", lineHeight: 1 }}>↑</span>
 );
 
 function TypingDots() {
