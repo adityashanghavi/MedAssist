@@ -119,6 +119,24 @@ def root():
         rag_status = "unavailable"
     return {"status": "MedAssist API is running", "rag": rag_status}
 
+@app.get("/debug-tesseract")
+def debug_tesseract():
+    import shutil
+    import subprocess
+    import glob
+    which_result = shutil.which("tesseract")
+    glob_result = glob.glob("/nix/**/*tesseract*", recursive=True)
+    try:
+        find_result = subprocess.run(["find", "/", "-name", "tesseract", "-type", "f"], 
+                                     capture_output=True, text=True, timeout=10)
+        find_output = find_result.stdout
+    except Exception as e:
+        find_output = str(e)
+    return {
+        "which": which_result,
+        "glob_nix": glob_result[:10],
+        "find": find_output
+    }
 
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
