@@ -72,8 +72,28 @@ async def startup_event():
 def _ocr_pdf(pdf_bytes: bytes) -> tuple:
     """Convert scanned PDF pages to images and run OCR on each page."""
     try:
-        from pdf2image import convert_from_bytes
         import pytesseract
+        import shutil
+        from pdf2image import convert_from_bytes
+
+        # Find tesseract wherever it is installed
+        tesseract_path = shutil.which("tesseract")
+        if tesseract_path:
+            pytesseract.pytesseract.tesseract_cmd = tesseract_path
+            logger.info(f"Found tesseract at: {tesseract_path}")
+        else:
+            # Try common Nix paths
+            for path in [
+                "/nix/var/nix/profiles/default/bin/tesseract",
+                "/run/current-system/sw/bin/tesseract",
+                "/usr/bin/tesseract",
+                "/usr/local/bin/tesseract",
+            ]:
+                if os.path.exists(path):
+                    pytesseract.pytesseract.tesseract_cmd = path
+                    logger.info(f"Found tesseract at fallback path: {path}")
+                    break
+
         images = convert_from_bytes(pdf_bytes, dpi=200)
         text_pages = []
         for image in images:
