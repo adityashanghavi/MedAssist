@@ -340,7 +340,7 @@ export default function MedicalChatbot() {
             marginTop: "10px", textAlign: "center",
             fontSize: "11.5px", color: "#999", fontFamily: "sans-serif", lineHeight: "1.5"
           }}>
-            ⚠️ For information only. Please consult your doctor for treatment plans.
+            ⚠️ <strong>Medical Disclaimer:</strong> For information only. Please consult your doctor for treatment plans.
           </div>
         </div>
       </div>
