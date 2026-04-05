@@ -186,7 +186,7 @@ export default function MedicalChatbot() {
   return (
     <div style={{
       height: "100vh", width: "100vw", display: "flex", flexDirection: "column",
-      background: "#f0ede8", fontFamily: "'Georgia', serif", overflow: "hidden"
+      background: "#f8f8f8", fontFamily: "'Georgia', serif", overflow: "hidden"
     }}>
       <style>{`
         html, body, #root { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
@@ -269,7 +269,7 @@ export default function MedicalChatbot() {
       </div>
 
       {/* Input area */}
-      <div style={{ flexShrink: 0, padding: "12px 24px 20px", background: "#f0ede8" }}>
+      <div style={{ flexShrink: 0, padding: "12px 24px 20px", background: "#f8f8f8" }}>
         <div style={{ maxWidth: "720px", margin: "0 auto" }}>
 
           {documentName && <DocumentBadge fileName={documentName} onRemove={removeDocument} />}
