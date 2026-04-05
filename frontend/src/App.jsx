@@ -5,9 +5,9 @@ const API_URL = "https://medassist-production-aa9a.up.railway.app";
 const WELCOME_MESSAGE = "Hello! I'm MedAssist, your medical information companion created by Aditya Shanghavi. I can help answer general health questions, explain medical terms, or discuss symptoms and conditions.\n\nYou can also upload a PDF or TXT file and ask questions about it.\n\nHow can I help you today? Remember, for emergencies always call 911.";
 
 const SendIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-    <line x1="22" y1="2" x2="11" y2="13" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-    <polygon points="22 2 15 22 11 13 2 9 22 2" stroke="currentColor" strokeWidth="2" fill="currentColor" strokeLinejoin="round"/>
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="22" y1="2" x2="11" y2="13"/>
+    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
   </svg>
 );
 
@@ -340,7 +340,7 @@ export default function MedicalChatbot() {
             marginTop: "10px", textAlign: "center",
             fontSize: "11.5px", color: "#999", fontFamily: "sans-serif", lineHeight: "1.5"
           }}>
-            <strong style={{ color: "#b8860b" }}>⚠️ Medical Disclaimer:</strong> General health information only — not a substitute for professional medical advice.
+            ⚠️ For information only. Please consult your doctor for treatment plans.
           </div>
         </div>
       </div>
