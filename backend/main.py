@@ -102,6 +102,9 @@ def _ocr_pdf(pdf_bytes: bytes) -> tuple:
                 text_pages.append(page_text.strip())
         return text_pages, len(images)
     except Exception as e:
+        import traceback
+        logger.error(f"OCR failed: {str(e)}")
+        logger.error(traceback.format_exc())
         raise RuntimeError(f"OCR failed: {str(e)}")
 
 
