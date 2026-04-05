@@ -209,13 +209,14 @@ export default function MedicalChatbot() {
         height: "52px", flexShrink: 0, display: "flex", alignItems: "center",
         justifyContent: "center", gap: "12px",
         borderBottom: "1px solid rgba(0,0,0,0.07)",
-        background: "rgba(240,237,232,0.95)", backdropFilter: "blur(8px)"
+        background: "linear-gradient(135deg, #023e8a 0%, #0077b6 55%, #00b8a9 100%)",
+        boxShadow: "0 2px 12px rgba(2,62,138,0.2)"
       }}>
         <span style={{ fontSize: "20px" }}>🩺</span>
-        <span style={{ fontWeight: "bold", fontSize: "16px", color: "#1a2332", letterSpacing: "0.2px" }}>MedAssist</span>
+        <span style={{ fontWeight: "bold", fontSize: "16px", color: "white", letterSpacing: "0.2px" }}>MedAssist</span>
         <div style={{ display: "flex", alignItems: "center", gap: "5px", fontFamily: "sans-serif" }}>
-          <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#22c55e", display: "inline-block" }} />
-          <span style={{ fontSize: "11px", color: "#888" }}>Always Online</span>
+          <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#4ade80", display: "inline-block" }} />
+          <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.75)" }}>Always Online</span>
         </div>
       </div>
 
