@@ -26,7 +26,7 @@ function Message({ msg }) {
   if (isUser) {
     return (
       <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "20px", animation: "fadeSlideIn 0.25s ease forwards" }}>
-        <div style={{
+        <div className="user-bubble" style={{
           maxWidth: "60%", background: "#e8f4fb",
           color: "#1a2332", borderRadius: "18px 18px 4px 18px",
           padding: "12px 17px", fontSize: "15px", lineHeight: "1.65",
@@ -185,7 +185,7 @@ export default function MedicalChatbot() {
 
   return (
     <div style={{
-      height: "100vh", width: "100vw", display: "flex", flexDirection: "column",
+      height: "100dvh", width: "100vw", display: "flex", flexDirection: "column",
       background: "#f8f8f8", fontFamily: "'Georgia', serif", overflow: "hidden"
     }}>
       <style>{`
@@ -199,6 +199,15 @@ export default function MedicalChatbot() {
         .send-btn:hover:not(:disabled) { background: #005f8f !important; }
         .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
         .upload-btn:hover { background: rgba(0,0,0,0.06) !important; }
+        @media (max-width: 640px) {
+          .messages-area { padding: 20px 14px 12px !important; }
+          .input-area { padding: 10px 12px 14px !important; }
+          .upload-btn, .send-btn { width: 44px !important; height: 44px !important; border-radius: 12px !important; }
+          .user-bubble { max-width: 82% !important; }
+          .welcome-text { font-size: 13px !important; }
+          .welcome-heading { font-size: 22px !important; }
+          .disclaimer { font-size: 10.5px !important; }
+        }
       `}</style>
 
       {/* Minimal header */}
@@ -224,16 +233,16 @@ export default function MedicalChatbot() {
           <div style={{
             flex: 1, display: "flex", flexDirection: "column",
             alignItems: "center", justifyContent: "center",
-            padding: "40px 24px 20px", textAlign: "center"
+            padding: "clamp(20px, 5vw, 40px) 20px 20px", textAlign: "center"
           }}>
             <div style={{ fontSize: "40px", marginBottom: "20px" }}>🩺</div>
-            <h1 style={{
+            <h1 className="welcome-heading" style={{
               fontSize: "clamp(22px, 3vw, 32px)", fontWeight: "bold", color: "#1a2332",
               margin: "0 0 20px", letterSpacing: "-0.3px", maxWidth: "600px", lineHeight: "1.3"
             }}>
               How can I help you today?
             </h1>
-            <p style={{
+            <p className="welcome-text" style={{
               fontSize: "15px", color: "#555", lineHeight: "1.8",
               maxWidth: "520px", margin: 0, fontFamily: "sans-serif"
             }}>
@@ -242,7 +251,7 @@ export default function MedicalChatbot() {
           </div>
         ) : (
           /* Chat messages */
-          <div style={{ maxWidth: "720px", width: "100%", margin: "0 auto", padding: "32px 24px 16px" }}>
+          <div className="messages-area" style={{ maxWidth: "720px", width: "100%", margin: "0 auto", padding: "32px 24px 16px" }}>
             {messages.map((msg, i) => <Message key={i} msg={msg} />)}
             {loading && (
               <div style={{ display: "flex", gap: "12px", marginBottom: "24px", alignItems: "flex-start" }}>
@@ -269,7 +278,7 @@ export default function MedicalChatbot() {
       </div>
 
       {/* Input area */}
-      <div style={{ flexShrink: 0, padding: "12px 24px 20px", background: "#f8f8f8" }}>
+      <div className="input-area" style={{ flexShrink: 0, padding: "12px 24px 20px", background: "#f8f8f8" }}>
         <div style={{ maxWidth: "720px", margin: "0 auto" }}>
 
           {documentName && <DocumentBadge fileName={documentName} onRemove={removeDocument} />}
@@ -333,7 +342,7 @@ export default function MedicalChatbot() {
           </div>
 
           {/* Disclaimer */}
-          <div style={{
+          <div className="disclaimer" style={{
             marginTop: "10px", textAlign: "center",
             fontSize: "11.5px", color: "#999", fontFamily: "sans-serif", lineHeight: "1.5"
           }}>
