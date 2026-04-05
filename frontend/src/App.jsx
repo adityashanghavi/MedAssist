@@ -4,10 +4,6 @@ const API_URL = "https://medassist-production-aa9a.up.railway.app";
 
 const WELCOME_MESSAGE = "Hello! I'm MedAssist, your medical information companion created by Aditya Shanghavi. I can help answer general health questions, explain medical terms, or discuss symptoms and conditions.\n\nYou can also upload a PDF or TXT file and ask questions about it.\n\nHow can I help you today? Remember, for emergencies always call 911.";
 
-const SendIcon = () => (
-  <span style={{ fontSize: "18px", color: "white", lineHeight: 1 }}>↑</span>
-);
-
 function TypingDots() {
   return (
     <div style={{ display: "flex", gap: "5px", alignItems: "center", padding: "4px 0" }}>
@@ -27,9 +23,9 @@ function Message({ msg }) {
     return (
       <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "20px", animation: "fadeSlideIn 0.25s ease forwards" }}>
         <div className="user-bubble" style={{
-          maxWidth: "60%", background: "#e8f4fb",
-          color: "#1a2332", borderRadius: "18px 18px 4px 18px",
-          padding: "12px 17px", fontSize: "15px", lineHeight: "1.65",
+          background: "#e8f4fb", color: "#1a2332",
+          borderRadius: "18px 18px 4px 18px",
+          padding: "12px 16px", fontSize: "15px", lineHeight: "1.65",
           whiteSpace: "pre-wrap", wordBreak: "break-word",
           boxShadow: "0 1px 4px rgba(0,0,0,0.06)"
         }}>
@@ -71,7 +67,8 @@ function DocumentBadge({ fileName, onRemove }) {
       </span>
       <button onClick={onRemove} style={{
         background: "none", border: "none", cursor: "pointer",
-        color: "#999", fontSize: "14px", padding: "0 2px", lineHeight: 1
+        color: "#999", fontSize: "16px", padding: "2px 4px", lineHeight: 1,
+        minWidth: "28px", minHeight: "28px"
       }}>✕</button>
     </div>
   );
@@ -157,7 +154,7 @@ export default function MedicalChatbot() {
     if (!userText || loading) return;
     setInput("");
     setError(null);
-    if (textareaRef.current) textareaRef.current.style.height = "auto";
+    if (textareaRef.current) { textareaRef.current.style.height = "auto"; }
 
     const newMessages = [...messages, { role: "user", content: userText }];
     setMessages(newMessages);
@@ -190,39 +187,41 @@ export default function MedicalChatbot() {
     }}>
       <style>{`
         html, body, #root { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
+        * { box-sizing: border-box; }
         @keyframes bounce { 0%,60%,100%{transform:translateY(0);opacity:.4} 30%{transform:translateY(-6px);opacity:1} }
         @keyframes fadeSlideIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
-        textarea:focus { outline: none; }
+        textarea { outline: none; -webkit-appearance: none; }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }
-        .send-btn:hover:not(:disabled) { background: #005f8f !important; }
+
+        .user-bubble { max-width: 70%; }
         .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .upload-btn:hover { background: rgba(0,0,0,0.06) !important; }
-        @media (max-width: 640px) {
-          .messages-area { padding: 20px 14px 12px !important; }
-          .input-area { padding: 10px 12px 14px !important; }
-          .upload-btn, .send-btn { width: 44px !important; height: 44px !important; border-radius: 12px !important; }
-          .user-bubble { max-width: 82% !important; }
-          .welcome-text { font-size: 13px !important; }
-          .welcome-heading { font-size: 22px !important; }
-          .disclaimer { font-size: 10.5px !important; }
+        .send-btn:not(:disabled):active { transform: scale(0.95); }
+        .upload-btn:active { opacity: 0.7; }
+
+        @media (hover: hover) {
+          .send-btn:not(:disabled):hover { background: #005f8f !important; }
+          .upload-btn:hover { background: rgba(0,0,0,0.06) !important; }
+        }
+
+        @media (max-width: 480px) {
+          .user-bubble { max-width: 85%; }
         }
       `}</style>
 
-      {/* Minimal header */}
+      {/* Header */}
       <div style={{
-        height: "52px", flexShrink: 0, display: "flex", alignItems: "center",
-        justifyContent: "center", gap: "12px",
-        borderBottom: "1px solid rgba(0,0,0,0.07)",
+        flexShrink: 0, height: "56px", display: "flex", alignItems: "center",
+        justifyContent: "center", gap: "10px",
         background: "linear-gradient(135deg, #023e8a 0%, #0077b6 55%, #00b8a9 100%)",
         boxShadow: "0 2px 12px rgba(2,62,138,0.2)"
       }}>
-        <span style={{ fontSize: "20px" }}>🩺</span>
-        <span style={{ fontWeight: "bold", fontSize: "16px", color: "white", letterSpacing: "0.2px" }}>MedAssist</span>
+        <span style={{ fontSize: "22px" }}>🩺</span>
+        <span style={{ fontWeight: "bold", fontSize: "17px", color: "white", letterSpacing: "0.2px" }}>MedAssist</span>
         <div style={{ display: "flex", alignItems: "center", gap: "5px", fontFamily: "sans-serif" }}>
-          <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#4ade80", display: "inline-block" }} />
-          <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.75)" }}>Always Online</span>
+          <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#4ade80", display: "inline-block", flexShrink: 0 }} />
+          <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.8)" }}>Always Online</span>
         </div>
       </div>
 
@@ -233,25 +232,28 @@ export default function MedicalChatbot() {
           <div style={{
             flex: 1, display: "flex", flexDirection: "column",
             alignItems: "center", justifyContent: "center",
-            padding: "clamp(20px, 5vw, 40px) 20px 20px", textAlign: "center"
+            padding: "32px 24px 24px", textAlign: "center"
           }}>
-            <div style={{ fontSize: "40px", marginBottom: "20px" }}>🩺</div>
-            <h1 className="welcome-heading" style={{
-              fontSize: "clamp(22px, 3vw, 32px)", fontWeight: "bold", color: "#1a2332",
-              margin: "0 0 20px", letterSpacing: "-0.3px", maxWidth: "600px", lineHeight: "1.3"
+            <div style={{ fontSize: "clamp(32px, 6vw, 48px)", marginBottom: "16px" }}>🩺</div>
+            <h1 style={{
+              fontSize: "clamp(20px, 4vw, 30px)", fontWeight: "bold", color: "#1a2332",
+              margin: "0 0 16px", letterSpacing: "-0.3px", lineHeight: "1.3"
             }}>
               How can I help you today?
             </h1>
-            <p className="welcome-text" style={{
-              fontSize: "15px", color: "#555", lineHeight: "1.8",
-              maxWidth: "520px", margin: 0, fontFamily: "sans-serif"
+            <p style={{
+              fontSize: "clamp(13px, 2vw, 15px)", color: "#555", lineHeight: "1.8",
+              maxWidth: "480px", margin: 0, fontFamily: "sans-serif"
             }}>
               {WELCOME_MESSAGE}
             </p>
           </div>
         ) : (
           /* Chat messages */
-          <div className="messages-area" style={{ maxWidth: "720px", width: "100%", margin: "0 auto", padding: "32px 24px 16px" }}>
+          <div style={{
+            maxWidth: "720px", width: "100%", margin: "0 auto",
+            padding: "clamp(16px, 3vw, 32px) clamp(14px, 3vw, 24px) 16px"
+          }}>
             {messages.map((msg, i) => <Message key={i} msg={msg} />)}
             {loading && (
               <div style={{ display: "flex", gap: "12px", marginBottom: "24px", alignItems: "flex-start" }}>
@@ -278,7 +280,10 @@ export default function MedicalChatbot() {
       </div>
 
       {/* Input area */}
-      <div className="input-area" style={{ flexShrink: 0, padding: "12px 24px 20px", background: "#f8f8f8" }}>
+      <div style={{
+        flexShrink: 0, background: "#f8f8f8",
+        padding: "clamp(8px, 2vw, 12px) clamp(12px, 3vw, 24px) clamp(12px, 3vw, 20px)"
+      }}>
         <div style={{ maxWidth: "720px", margin: "0 auto" }}>
 
           {documentName && <DocumentBadge fileName={documentName} onRemove={removeDocument} />}
@@ -287,7 +292,7 @@ export default function MedicalChatbot() {
           <div style={{
             background: "white", borderRadius: "16px",
             boxShadow: "0 2px 16px rgba(0,0,0,0.1), 0 1px 4px rgba(0,0,0,0.06)",
-            border: "1px solid rgba(0,0,0,0.08)", overflow: "hidden"
+            border: "1px solid rgba(0,0,0,0.08)"
           }}>
             <textarea
               ref={textareaRef}
@@ -297,17 +302,17 @@ export default function MedicalChatbot() {
               placeholder={documentName ? `Ask about ${documentName}…` : "Ask a medical question…"}
               rows={1}
               style={{
-                width: "100%", resize: "none", border: "none",
-                padding: "16px 18px 8px", fontSize: "15px", color: "#1a2332",
+                display: "block", width: "100%", resize: "none", border: "none",
+                padding: "16px 16px 8px", fontSize: "15px", color: "#1a2332",
                 background: "transparent", lineHeight: "1.55",
-                fontFamily: "Georgia, serif", maxHeight: "140px",
-                boxSizing: "border-box"
+                fontFamily: "Georgia, serif", maxHeight: "120px",
+                borderRadius: "16px 16px 0 0"
               }}
-              onInput={e => { e.target.style.height = "auto"; e.target.style.height = Math.min(e.target.scrollHeight, 140) + "px"; }}
+              onInput={e => { e.target.style.height = "auto"; e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px"; }}
             />
             <div style={{
               display: "flex", alignItems: "center", justifyContent: "space-between",
-              padding: "8px 12px 12px"
+              padding: "6px 10px 10px"
             }}>
               <input ref={fileInputRef} type="file" accept=".pdf,.txt" onChange={handleFileUpload} style={{ display: "none" }} />
               <button
@@ -316,12 +321,12 @@ export default function MedicalChatbot() {
                 disabled={uploading}
                 title="Upload PDF or TXT"
                 style={{
-                  width: "34px", height: "34px", borderRadius: "8px",
-                  background: "transparent", border: "1px solid rgba(0,0,0,0.12)",
+                  width: "44px", height: "44px", borderRadius: "10px",
+                  background: "transparent",
+                  border: `1.5px solid ${documentName ? "rgba(0,119,182,0.5)" : "rgba(0,0,0,0.12)"}`,
                   cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                  color: documentName ? "#0077b6" : "#666", fontSize: "18px",
-                  transition: "background .15s", fontWeight: "300",
-                  outline: documentName ? "1.5px solid rgba(0,119,182,0.4)" : "none"
+                  color: documentName ? "#0077b6" : "#555", fontSize: "22px",
+                  transition: "opacity .15s", fontWeight: "300", flexShrink: 0
                 }}>
                 {uploading ? "⏳" : "+"}
               </button>
@@ -330,23 +335,25 @@ export default function MedicalChatbot() {
                 onClick={() => sendMessage()}
                 disabled={!input.trim() || loading}
                 style={{
-                  width: "34px", height: "34px", borderRadius: "8px",
+                  width: "44px", height: "44px", borderRadius: "10px",
                   background: "#0077b6", border: "none",
                   cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                  color: "white", transition: "background .15s",
-                  boxShadow: "0 2px 8px rgba(0,119,182,0.3)"
+                  color: "white", transition: "background .15s, transform .1s",
+                  boxShadow: "0 2px 8px rgba(0,119,182,0.35)", flexShrink: 0,
+                  fontSize: "20px"
                 }}>
-                <SendIcon />
+                ↑
               </button>
             </div>
           </div>
 
           {/* Disclaimer */}
-          <div className="disclaimer" style={{
-            marginTop: "10px", textAlign: "center",
-            fontSize: "11.5px", color: "#999", fontFamily: "sans-serif", lineHeight: "1.5"
+          <div style={{
+            marginTop: "8px", textAlign: "center",
+            fontSize: "clamp(10px, 1.5vw, 11.5px)", color: "#aaa",
+            fontFamily: "sans-serif", lineHeight: "1.5"
           }}>
-            ⚠️ <strong>Medical Disclaimer:</strong> For information only. Please consult your doctor for treatment plans.
+            ⚠️ <strong style={{ color: "#999" }}>Medical Disclaimer:</strong> For information only. Please consult your doctor for treatment plans.
           </div>
         </div>
       </div>
