@@ -7,3 +7,6 @@ pdfplumber
 python-multipart
 chromadb
 requests
+pytesseract
+pdf2image
+Pillow

@@ -67,6 +67,24 @@ async def startup_event():
     thread.start()
 
 
+# ── Helper: OCR a PDF using Tesseract ─────────────────────────────────────────
+
+def _ocr_pdf(pdf_bytes: bytes) -> tuple:
+    """Convert scanned PDF pages to images and run OCR on each page."""
+    try:
+        from pdf2image import convert_from_bytes
+        import pytesseract
+        images = convert_from_bytes(pdf_bytes, dpi=200)
+        text_pages = []
+        for image in images:
+            page_text = pytesseract.image_to_string(image)
+            if page_text.strip():
+                text_pages.append(page_text.strip())
+        return text_pages, len(images)
+    except Exception as e:
+        raise RuntimeError(f"OCR failed: {str(e)}")
+
+
 # ── Routes ─────────────────────────────────────────────────────────────────────
 
 @app.get("/")
@@ -89,28 +107,41 @@ async def upload_file(file: UploadFile = File(...)):
         return {"text": text, "pages": 1}
 
     if filename.endswith(".pdf"):
+        contents = await file.read()
+
+        # First try pdfplumber (works for text-based PDFs)
         try:
             import pdfplumber
-        except ImportError:
-            raise HTTPException(status_code=500, detail="pdfplumber is not installed.")
-        try:
-            contents = await file.read()
             text_pages = []
             with pdfplumber.open(io.BytesIO(contents)) as pdf:
                 for page in pdf.pages:
                     page_text = page.extract_text()
-                    if page_text:
+                    if page_text and page_text.strip():
                         text_pages.append(page_text)
-            if not text_pages:
-                raise HTTPException(status_code=422, detail="Could not extract text from this PDF.")
-            full_text = "\n\n".join(text_pages)
-            if len(full_text) > 50000:
-                full_text = full_text[:50000] + "\n\n[Document truncated due to length]"
-            return {"text": full_text, "pages": len(text_pages)}
+
+            if text_pages:
+                full_text = "\n\n".join(text_pages)
+                if len(full_text) > 50000:
+                    full_text = full_text[:50000] + "\n\n[Document truncated due to length]"
+                return {"text": full_text, "pages": len(text_pages)}
+        except Exception as e:
+            logger.warning(f"pdfplumber failed, trying OCR: {e}")
+
+        # Fall back to OCR for scanned PDFs
+        try:
+            logger.info("Attempting OCR on scanned PDF...")
+            text_pages, num_pages = _ocr_pdf(contents)
+            if text_pages:
+                full_text = "\n\n".join(text_pages)
+                if len(full_text) > 50000:
+                    full_text = full_text[:50000] + "\n\n[Document truncated due to length]"
+                return {"text": full_text, "pages": num_pages}
+            else:
+                raise HTTPException(status_code=422, detail="Could not extract text from this PDF. The document may be unreadable.")
         except HTTPException:
             raise
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Failed to parse PDF: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Failed to process PDF: {str(e)}")
 
     raise HTTPException(status_code=400, detail="Only PDF and TXT files are supported.")
 
@@ -122,11 +153,9 @@ def chat(request: ChatRequest):
 
     system = SYSTEM_PROMPT
 
-    # Inject uploaded document context
     if request.document_text:
         system += f"\n\n---\nThe user has uploaded a document. Use it to answer their questions:\n\n{request.document_text}\n---"
 
-    # Inject RAG context from PubMed if index is ready
     try:
         from rag import retrieve, _is_ready
         if _is_ready:
@@ -145,6 +174,7 @@ def chat(request: ChatRequest):
         response = client.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=1000,
+            temperature=0.3,
             system=system,
             messages=[{"role": m.role, "content": m.content} for m in request.messages],
         )
