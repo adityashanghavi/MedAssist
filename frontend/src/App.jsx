@@ -17,6 +17,53 @@ function TypingDots() {
   );
 }
 
+function SourcesPanel({ sources }) {
+  if (!sources || sources.length === 0) return null;
+  return (
+    <div style={{
+      marginTop: "10px",
+      borderTop: "1px solid rgba(0,184,169,0.2)",
+      paddingTop: "8px",
+    }}>
+      <div style={{
+        fontSize: "11px", fontWeight: "bold", color: "#0077b6",
+        textTransform: "uppercase", letterSpacing: "0.7px",
+        marginBottom: "6px", fontFamily: "sans-serif",
+        display: "flex", alignItems: "center", gap: "4px"
+      }}>
+        📚 Sources
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+        {sources.map(src => (
+          <div key={src.number} style={{
+            fontSize: "12px", fontFamily: "sans-serif",
+            display: "flex", gap: "6px", alignItems: "flex-start"
+          }}>
+            <span style={{
+              color: "#00b8a9", fontWeight: "bold", flexShrink: 0, minWidth: "18px"
+            }}>[{src.number}]</span>
+            {src.url ? (
+              <a
+                href={src.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "#0077b6", textDecoration: "underline", lineHeight: "1.4" }}
+              >
+                {src.title}
+              </a>
+            ) : (
+              <span style={{ color: "#5a8fa3", lineHeight: "1.4" }}>{src.title}</span>
+            )}
+            {src.pmid && src.pmid !== "?" && (
+              <span style={{ color: "#8fa6b2", flexShrink: 0 }}>PMID {src.pmid}</span>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function Message({ msg }) {
   const isUser = msg.role === "user";
   if (isUser) {
@@ -47,6 +94,7 @@ function Message({ msg }) {
         whiteSpace: "pre-wrap", wordBreak: "break-word", paddingTop: "4px"
       }}>
         {msg.content}
+        {!isUser && <SourcesPanel sources={msg.sources} />}
       </div>
     </div>
   );
@@ -171,7 +219,11 @@ export default function MedicalChatbot() {
         throw new Error(err.detail || "Server error");
       }
       const data = await res.json();
-      setMessages(prev => [...prev, { role: "assistant", content: data.reply }]);
+      setMessages(prev => [...prev, {
+        role: "assistant",
+        content: data.reply,
+        sources: data.sources || [],
+      }]);
     } catch (err) {
       setError(err.message);
       setMessages(prev => prev.slice(0, -1));

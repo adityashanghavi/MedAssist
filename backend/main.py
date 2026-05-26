@@ -30,7 +30,7 @@ SYSTEM_PROMPT = """You are MedAssist, a knowledgeable medical information assist
 
 Guidelines:
 - Provide evidence-based medical information clearly and compassionately
-- When relevant PubMed literature is provided to you, use it to ground your answer and mention it came from published research
+- When relevant PubMed literature is provided to you, cite it inline using its bracketed number, e.g. [1] or [2], directly after the claim it supports. Cite every piece of information you draw from the provided literature.
 - Always remind users to consult a licensed healthcare professional for personal medical advice, diagnoses, or treatment decisions
 - Explain medical terms in plain language
 - For emergencies, always direct users to call 911 or go to the nearest emergency room immediately
@@ -199,6 +199,7 @@ def chat(request: ChatRequest):
     if request.document_text:
         system += f"\n\n---\nThe user has uploaded a document. Use it to answer their questions:\n\n{request.document_text}\n---"
 
+    rag_sources = []
     try:
         from rag import retrieve, _is_ready
         if _is_ready:
@@ -206,10 +207,10 @@ def chat(request: ChatRequest):
                 (m.content for m in reversed(request.messages) if m.role == "user"),
                 ""
             )
-            rag_context = retrieve(last_user_msg)
+            rag_context, rag_sources = retrieve(last_user_msg)
             if rag_context:
                 system += f"\n\n---\n{rag_context}\n---"
-                logger.info("RAG context injected into prompt.")
+                logger.info(f"RAG context injected ({len(rag_sources)} sources).")
     except Exception as e:
         logger.warning(f"RAG skipped: {e}")
 
@@ -221,7 +222,10 @@ def chat(request: ChatRequest):
             system=system,
             messages=[{"role": m.role, "content": m.content} for m in request.messages],
         )
-        return {"reply": response.content[0].text}
+        return {
+            "reply": response.content[0].text,
+            "sources": rag_sources,
+        }
 
     except anthropic.AuthenticationError:
         raise HTTPException(status_code=401, detail="Invalid API key")

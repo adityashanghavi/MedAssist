@@ -144,9 +144,15 @@ def build_index():
     logger.info(f"RAG: Ready — {len(d_docs)} abstracts indexed.")
 
 
-def retrieve(query: str) -> str:
+def retrieve(query: str) -> tuple:
+    """Return (context_str, sources_list).
+
+    context_str is injected into the system prompt.
+    sources_list is a list of dicts with keys: number, pmid, title, url.
+    Both are empty / [] when RAG is unavailable or returns no results.
+    """
     if not _is_ready or _collection is None:
-        return ""
+        return "", []
     try:
         results = _collection.query(
             query_texts=[query],
@@ -156,11 +162,28 @@ def retrieve(query: str) -> str:
         docs  = results["documents"][0]
         metas = results["metadatas"][0]
         if not docs:
-            return ""
-        lines = ["Relevant medical literature from PubMed:\n"]
+            return "", []
+
+        sources = []
+        lines = [
+            "Relevant medical literature from PubMed "
+            "(when you use information from these articles, cite them inline "
+            "using their bracketed number, e.g. [1], [2]):\n"
+        ]
         for i, (doc, meta) in enumerate(zip(docs, metas), 1):
-            lines.append(f"[{i}] PMID {meta.get('pmid','?')}\n{doc}\n")
-        return "\n".join(lines)
+            pmid  = meta.get("pmid", "?")
+            title = meta.get("title", "Untitled")
+            lines.append(f"[{i}] PMID {pmid} — {title}\n{doc}\n")
+            sources.append({
+                "number": i,
+                "pmid":   pmid,
+                "title":  title,
+                "url": (
+                    f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/"
+                    if pmid != "?" else None
+                ),
+            })
+        return "\n".join(lines), sources
     except Exception as e:
         logger.warning(f"RAG retrieval error: {e}")
-        return ""
+        return "", []
